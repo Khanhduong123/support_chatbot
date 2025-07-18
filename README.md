@@ -10,7 +10,7 @@ Dự án **support_chatbot** là một ứng dụng chatbot hỗ trợ khách h�
 
 ## Yêu cầu
 
-- Python 3.8+
+- Python 3.10+
 - FastAPI
 - Uvicorn
 
