@@ -1,5 +1,5 @@
 import uuid
-from src.v1.configs.config import Config
+from src.v1.configs.config import VectorDatabaseConfig
 from qdrant_client import QdrantClient, models
 from tqdm import tqdm
 
@@ -9,8 +9,8 @@ class DocumentSearch:
         self.client_grpc = client_gpc
         self.embedding_model = model
         self.collection_name = f"collection_user"
-        self.vector_size = Config.EMBEDDING_DIM
-        self.batch_size = Config.BATCH_SIZE
+        self.vector_size = VectorDatabaseConfig.EMBEDDING_DIM
+        self.batch_size = VectorDatabaseConfig.BATCH_SIZE
 
         if not self.check_collection():
             self.create_collection()

@@ -13,7 +13,7 @@ class DatabaseSettings(BaseSettings):
     ALGORITHM: str = os.getenv("ALGORITHM")
 
 
-class Config:
+class VectorDatabaseConfig:
     # Load the QDRANT_URL from environment variables
     QDRANT_URL: str = os.getenv("QDRANT_URL")
     if not QDRANT_URL:
@@ -42,3 +42,11 @@ class Config:
             raise ValueError(
                 f"Invalid BATCH_SIZE: {self.BATCH_SIZE}, it must be a positive integer."
             )
+        
+class ChatConfig:
+    model = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+    # Load the OpenAI API key from environment variables
+    api_key = os.getenv("OPENAI_API_KEY")
+    document_top_k = int(os.getenv("DOCUMENT_TOP_K", 5))
+    prompt_not_found = """I apologize, the documents do not seem to contain any data related to the question. 
+    You can ask other questions related to the documents."""

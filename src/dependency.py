@@ -1,9 +1,9 @@
 from qdrant_client import QdrantClient
 from langchain_openai import OpenAIEmbeddings
 from src.v1.services.document.test import DocumentSearch
-from src.v1.configs.config import Config
+from src.v1.configs.config import VectorDatabaseConfig
 
-document_config = Config()
+document_config = VectorDatabaseConfig()
 
 client_qdrant = QdrantClient(
     url=document_config.QDRANT_URL,

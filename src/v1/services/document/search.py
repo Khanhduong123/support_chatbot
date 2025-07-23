@@ -14,7 +14,7 @@ from langchain_community.document_loaders import (
     UnstructuredExcelLoader,
 )
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from src.v1.configs.config import Config
+from src.v1.configs.config import VectorDatabaseConfig
 from src.dependency import embeddings_documents_model
 
 
@@ -75,11 +75,11 @@ def split_document(user_id: int, db: Session):
 class DocumentService:
     def __init__(self):
         self.client_grpc = QdrantClient(
-            api_key=Config.QDRANT_API_KEY, url=Config.QDRANT_URL
+            api_key=VectorDatabaseConfig.QDRANT_API_KEY, url=VectorDatabaseConfig.QDRANT_URL
         )
         self.embedding_model = embeddings_documents_model
-        self.vector_size = Config.EMBEDDING_DIM
-        self.batch_size = Config.BATCH_SIZE
+        self.vector_size = VectorDatabaseConfig.EMBEDDING_DIM
+        self.batch_size = VectorDatabaseConfig.BATCH_SIZE
 
     def create_collection(self, user_id):
         collection_name = f"collection_user_{user_id}"
@@ -92,7 +92,7 @@ class DocumentService:
             )
             self.client_grpc.create_payload_index(
                 collection_name=collection_name,
-                field_name="document_name",
+                field_name="user_id",
                 field_schema=models.PayloadSchemaType.KEYWORD,
             )
         else:
@@ -128,7 +128,7 @@ class DocumentService:
                 filter=models.Filter(
                     must=[
                         models.FieldCondition(
-                            key="document_name",  # chính xác key này phải đúng kiểu string
+                            key="user_id",  # chính xác key này phải đúng kiểu string
                             match=models.MatchValue(value=document_name),
                         )
                     ]
@@ -136,6 +136,19 @@ class DocumentService:
             ),
         )
         return response
+
+    async def search(self, question, user_id, top_k=2):
+        vectors = self.embedding_model.embed_documents([question])
+        response = self.client_grpc.search(
+            collection_name=f"collection_user_{user_id}",
+            query_vector=vectors[0],
+            limit=top_k,
+            with_payload=True,
+        )
+
+        result = response.model_dump()
+        results = result['groups'][0]['hits'][0]['payload']
+        return results
 
     def load_and_split_documents(self, user_id: int, db: Session):
         """
