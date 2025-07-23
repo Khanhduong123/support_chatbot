@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException, status, UploadFile, Depends
-from src.v1.schemas.chat import RequestSchema, ResponseSchema, ConservationSchemas
+from fastapi import APIRouter, HTTPException, status, Depends
+from src.v1.schemas.chat import RequestSchema, ResponseSchema
 from src.v1.services.chat.chat_service import ChatService
 from src.v1.services.users.token import get_user_from_token, oauth2_scheme
 from src.v1.configs.database import db_dependency
-from src.v1.models.model import ChatConversation, ChatMessage
+
 
 router = APIRouter()
 chat_service = ChatService()
